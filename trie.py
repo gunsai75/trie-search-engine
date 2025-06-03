@@ -1,3 +1,4 @@
+import preprocessing
 from collections import defaultdict
 
 class TrieNode:
@@ -61,3 +62,24 @@ class PrefixTree:
             words.append(node.text)
         for letter in node.children:
             self.__child_words_for(node.children[letter], words)
+
+# Running some test cases
+
+# if __name__ == '__main__':
+#     trie = PrefixTree()
+#     path = r"C:\Users\SAI GANESHA\Sai Files\B-TECH\Second Sem\DSA\DSA_PBE\dev\playground"
+#     forward_index = test1.get_tokens(path)
+    
+#     # Insert words with document information
+#     for doc in forward_index:
+#         word_list = forward_index[doc]
+#         trie.insert_from_document(word_list, doc)
+    
+#     # Search and display results
+#     results = trie.starts_with('co')
+#     print(f"Found {len(results)} words starting with 'co':")
+#     for result in results:
+#         print(f"  '{result['word']}' appears in: {', '.join(result['documents'])}")
+    
+#     # You can also search the inverted index directly
+#     print(f"\nDirect lookup - 'computer' appears in: {list(trie.inverted_index.get('computer', []))}")
