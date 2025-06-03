@@ -67,7 +67,7 @@ class PrefixTree:
 
 # if __name__ == '__main__':
 #     trie = PrefixTree()
-#     path = r"C:\Users\SAI GANESHA\Sai Files\B-TECH\Second Sem\DSA\DSA_PBE\dev\playground"
+#     path = <path to file>
 #     forward_index = test1.get_tokens(path)
     
 #     # Insert words with document information
