@@ -1,40 +1,48 @@
-import os
-
 class TrieNode:
-    def __init__(self):
-        self.children = {}
-        self.is_end_of_word = False
+    def __init__(self, text=''):
+        self.text = text
+        self.children = dict()
+        self.is_word = False
 
-class Trie:
+class PrefixTree:
     def __init__(self):
         self.root = TrieNode()
 
     def insert(self, word):
-        node = self.root
-        for char in word:
-            if char not in node.children:
-                node.children[char] = TrieNode()
-            node = node.children[char]
-        node.is_end_of_word = True
-
-    def insert_document(self, list_tokens):
-        for word in list_tokens:
+        current = self.root
+        for i, char in enumerate(word):
+            if char not in current.children:
+                prefix = word[0:i+1]
+                current.children[char] = TrieNode(prefix)
+            current = current.children[char]
+        current.is_word = True
+    
+    def insert_from_2dlist(self, list_2d):
+        for word in list_2d:
             self.insert(word)
-    
-    def search(self, prefix):
-        node = self.root
+
+    def find(self, word):
+        current = self.root
+        for char in word:
+            if char not in current.children:
+                return None
+            current = current.children
+        if current.is_word:
+            return current
+        
+    def starts_with(self, prefix):
+        words = list()
+        current = self.root
         for char in prefix:
-            if char not in node.children:
-                return[]
-            node = node.children[char]
-        return self._find_all_words_from_node(node, prefix)
-    
-    def _find_all_words_from_node(self, node, prefix):
-        words = []
-        if node:
-            if node.is_end_of_word:
-                words.append(prefix)
-            for char, child_node in node.children.items():
-                words.extend(self._find_all_words_from_node(child_node, prefix + char))
+            if char not in current.children:
+                return list()
+            current = current.children[char]
+        
+        self.__child_words_for(current, words)
         return words
-       
+
+    def __child_words_for(self, node, words):
+        if node.is_word:
+            words.append(node.text)
+        for letter in node.children:
+            self.__child_words_for(node.children[letter], words)
