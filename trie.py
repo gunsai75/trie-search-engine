@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 class TrieNode:
     def __init__(self, text=''):
         self.text = text
@@ -7,8 +9,10 @@ class TrieNode:
 class PrefixTree:
     def __init__(self):
         self.root = TrieNode()
-
-    def insert(self, word):
+        self.inverted_index = defaultdict(set)  # word -> set of documents
+    
+    def insert(self, word, document_name):
+        # Insert into trie
         current = self.root
         for i, char in enumerate(word):
             if char not in current.children:
@@ -16,31 +20,42 @@ class PrefixTree:
                 current.children[char] = TrieNode(prefix)
             current = current.children[char]
         current.is_word = True
+        
+        # Add to inverted index
+        self.inverted_index[word].add(document_name)
+   
+    def insert_from_document(self, word_list, document_name):
+        for word in word_list:
+            self.insert(word, document_name)
     
-    def insert_from_2dlist(self, list_2d):
-        for word in list_2d:
-            self.insert(word)
-
     def find(self, word):
         current = self.root
         for char in word:
             if char not in current.children:
                 return None
-            current = current.children
+            current = current.children[char]
         if current.is_word:
             return current
-        
+       
     def starts_with(self, prefix):
-        words = list()
+        words = []
         current = self.root
         for char in prefix:
             if char not in current.children:
-                return list()
+                return []
             current = current.children[char]
-        
+       
         self.__child_words_for(current, words)
-        return words
-
+        
+        # Add document information to results
+        results = []
+        for word in words:
+            results.append({
+                'word': word,
+                'documents': list(self.inverted_index[word])
+            })
+        return results
+    
     def __child_words_for(self, node, words):
         if node.is_word:
             words.append(node.text)
