@@ -1,5 +1,6 @@
 import os
 import string
+import shutil
 
 def remove_punctuation(text):
     punctuations = set(string.punctuation)
@@ -19,3 +20,13 @@ def get_tokens(dir_path):
             net_list.append(r)
 
     return net_list
+
+def insert_file(path_doc, target_dir):
+    shutil.move(path_doc, target_dir)
+
+def delete_file(target_dir, file_name):
+    full_path = os.path.join(target_dir, file_name)
+    if os.path.exists(full_path):
+        os.remove(full_path)
+    else:
+        print("file doesn't exist")
