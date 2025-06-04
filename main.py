@@ -5,6 +5,7 @@ import formatter_simple
 import pattern_matching_test
 from typing import Dict, List
 import os
+import time
 
 def preprocess_docs(dir_path: str) -> Dict[str, str]:
     doc_tokens = preprocessing.get_tokens(dir_path)
@@ -65,9 +66,16 @@ for q in query_split: # each query gets it's own thing
         relevant_docs = list(relevant_docs)
         
         # bruteforce
+        bruteforce_time_start = time.monotonic()
         bruteforce_results = match.search_in_documents_bruteforce(doc_map, q, relevant_docs)
+        bruteforce_time_end = time.monotonic()
+        bruteforce_time = bruteforce_time_end - bruteforce_time_start
+
         # kmp
+        kmp_time_start = time.monotonic()
         kmp_results = match.search_in_documents_kmp(doc_map, q, relevant_docs)
+        kmp_time_end = time.monotonic()
+        kmp_time = kmp_time_end - kmp_time_start
 
         # VERBOSE DISPLAY----
         # formatter_verbose.enhanced_display_results(bruteforce_results, kmp_results, doc_map)
@@ -87,6 +95,9 @@ for q in query_split: # each query gets it's own thing
         if bruteforce_results['total_matches'] == kmp_results['total_matches']:
             print(f"\n✅ VERIFICATION: Both algorithms found {bruteforce_results['total_matches']} matches")
             print("✅ Results are identical - algorithms working correctly!")
+            print(f"Bruteforce Time: {bruteforce_time}")
+            print(f"KMP Time: {kmp_time}")
+            
         else:
             print(f"\n❌ MISMATCH DETECTED:")
             print(f"   Brute Force: {bruteforce_results['total_matches']} matches")
