@@ -50,6 +50,9 @@ doc_map = preprocessing.map_documents(target_path) # maps doc name to it's text
 
 # trying to get prefixes found in trie and then putting then in matching algos 
 state = 1
+bruteforce = []
+kmp = []
+
 for q in query_split: # each query gets it's own thing
     trie_results = trie.starts_with(q) 
     if len(trie_results) == 0:
@@ -70,12 +73,14 @@ for q in query_split: # each query gets it's own thing
         bruteforce_results = match.search_in_documents_bruteforce(doc_map, q, relevant_docs)
         bruteforce_time_end = time.monotonic()
         bruteforce_time = bruteforce_time_end - bruteforce_time_start
+        bruteforce.append(bruteforce_time)
 
         # kmp
         kmp_time_start = time.monotonic()
         kmp_results = match.search_in_documents_kmp(doc_map, q, relevant_docs)
         kmp_time_end = time.monotonic()
         kmp_time = kmp_time_end - kmp_time_start
+        kmp.append(kmp_time)
 
         # VERBOSE DISPLAY----
         # formatter_verbose.enhanced_display_results(bruteforce_results, kmp_results, doc_map)
@@ -95,10 +100,15 @@ for q in query_split: # each query gets it's own thing
         if bruteforce_results['total_matches'] == kmp_results['total_matches']:
             print(f"\n✅ VERIFICATION: Both algorithms found {bruteforce_results['total_matches']} matches")
             print("✅ Results are identical - algorithms working correctly!")
-            print(f"Bruteforce Time: {bruteforce_time}")
-            print(f"KMP Time: {kmp_time}")
-            
+            # print(f"Bruteforce Time: {bruteforce_time}")
+            # print(f"KMP Time: {kmp_time}")
+
         else:
             print(f"\n❌ MISMATCH DETECTED:")
             print(f"   Brute Force: {bruteforce_results['total_matches']} matches")
             print(f"   KMP: {kmp_results['total_matches']} matches")
+
+print("="*30)
+print(f"Total time taken: ")
+print(f"Bruteforce: {sum(bruteforce)/len(bruteforce)}")
+print(f"KMP: {sum(kmp)/len(kmp)}")

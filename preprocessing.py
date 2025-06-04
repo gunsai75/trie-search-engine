@@ -21,7 +21,7 @@ def get_tokens(dir_path: str) -> Dict[str,str]:
 
     for i in files_filtered_list:
         file_path = os.path.join(dir_path, i)
-        with open(file_path) as f:
+        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
             r = remove_punctuation(f.read().replace("\n"," ")).split()
             # take r and add them as values to each doc
             doc_tokens[i] = r 
@@ -44,7 +44,7 @@ def map_documents(target_dir: str) -> Dict[str, str]:
     filtered = only_txt_files(files_input)
     for i in filtered:
         file_path = os.path.join(target_dir, i)  # Create full path
-        with open(file_path) as f:  # Use full path
+        with open(file_path, 'r', encoding='utf-8') as f:  # Use full path
             file_text = f.read()
             cleaned_text = remove_punctuation(file_text)
             documents_table[i] = cleaned_text  # Correct dictionary assignment
