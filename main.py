@@ -3,7 +3,8 @@ import trie
 import formatter_verbose
 import formatter_simple
 import pattern_matching_test
-from typing import Dict, List
+from collections import defaultdict
+from typing import Dict, List, Tuple
 import os
 import time
 
@@ -31,6 +32,39 @@ def query_process(query: str) -> List[str]:
     q_clean = preprocessing.remove_punctuation(query)
     q_split = q_clean.split(" ")
     return q_split
+
+def rank_documents(results_list: List[Dict]) -> List[Tuple[str, int, Dict]]:
+    """Rank documents by total number of matches across all query words.
+    
+    Args:
+        results_list (List[Dict]): List of search results for each query word.
+    
+    Returns:
+        List[Tuple[str, int, Dict]]: List of (document_name, total_matches, details) sorted by total_matches in descending order.
+    
+    Raises:
+        ValueError: If results_list is not a list of valid result dictionaries.
+    """
+    if not isinstance(results_list, list) or not all(isinstance(r, dict) for r in results_list):
+        raise ValueError("Results list must be a list of dictionaries")
+    
+    # Aggregate match counts per document
+    doc_scores = defaultdict(int)
+    doc_details = defaultdict(list)
+    
+    for result in results_list:
+        doc_results = result.get('document_results', {})
+        for doc_name, doc_result in doc_results.items():
+            matches_count = doc_result.get('matches_count', 0)
+            doc_scores[doc_name] += matches_count
+            doc_details[doc_name].append(doc_result)
+    
+    # Sort documents by total matches (descending)
+    ranked = [
+        (doc_name, score, doc_details[doc_name])
+        for doc_name, score in sorted(doc_scores.items(), key=lambda x: x[1], reverse=True)
+    ]
+    return ranked
 
 def main():
     """Main function to run the document search system."""
@@ -75,6 +109,7 @@ def main():
     # Lists to store execution times for performance comparison
     bruteforce_times = []
     kmp_times = []
+    all_results = []
     
     # Search for each query word in relevant documents
     for q in query_split:
@@ -97,18 +132,38 @@ def main():
         bruteforce_results = matcher.search_in_documents_bruteforce(doc_map, q, relevant_docs)
         bruteforce_time_end = time.monotonic()
         bruteforce_times.append(bruteforce_time_end - bruteforce_time_start)
-        
+        all_results.append(bruteforce_results)
+
         # KMP search
         kmp_time_start = time.monotonic()
         kmp_results = matcher.search_in_documents_kmp(doc_map, q, relevant_docs)
         kmp_time_end = time.monotonic()
         kmp_times.append(kmp_time_end - kmp_time_start)
-        
+        all_results.append(kmp_results)
+
         # Display results (simple format)
         print("BRUTEFORCE")
         print(bruteforce_results)
         print("KMP")
         print(kmp_results)
+
+        if all_results:
+            print("\n" + "=" * 50)
+            print("Ranked Documents by Relevance (Total Matches)")
+            print("=" * 50)
+            ranked_docs = rank_documents(all_results)
+            if not ranked_docs:
+                print("No matching documents found.")
+            else:
+                for doc_name, score, details in ranked_docs:
+                    print(f"\nDocument: {doc_name}")
+                    print(f"Total Matches: {score}")
+                    print("Details:")
+                    for detail in details:
+                        pattern = detail['pattern']
+                        matches = detail['matches']
+                        count = detail['matches_count']
+                        print(f"  Pattern '{pattern}': {count} matches at positions {matches}")
     
     # Display average execution times
     if bruteforce_times:
