@@ -1,5 +1,5 @@
-import preprocessing
 from collections import defaultdict
+from typing import List, Dict
 
 class TrieNode:
     def __init__(self, text=''):
@@ -38,7 +38,7 @@ class PrefixTree:
         if current.is_word:
             return current
        
-    def starts_with(self, prefix):
+    def starts_with(self, prefix: str) -> List[Dict]:
         words = []
         current = self.root
         for char in prefix:
@@ -62,24 +62,3 @@ class PrefixTree:
             words.append(node.text)
         for letter in node.children:
             self.__child_words_for(node.children[letter], words)
-
-# Running some test cases
-
-# if __name__ == '__main__':
-#     trie = PrefixTree()
-#     path = <path to file>
-#     forward_index = test1.get_tokens(path)
-    
-#     # Insert words with document information
-#     for doc in forward_index:
-#         word_list = forward_index[doc]
-#         trie.insert_from_document(word_list, doc)
-    
-#     # Search and display results
-#     results = trie.starts_with('co')
-#     print(f"Found {len(results)} words starting with 'co':")
-#     for result in results:
-#         print(f"  '{result['word']}' appears in: {', '.join(result['documents'])}")
-    
-#     # You can also search the inverted index directly
-#     print(f"\nDirect lookup - 'computer' appears in: {list(trie.inverted_index.get('computer', []))}")
