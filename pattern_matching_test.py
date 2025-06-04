@@ -1,6 +1,5 @@
 from typing import List, Dict
 
-
 class PatternMatch:
     def search_brute_force(self, text: str, pattern: str) -> List[int]:
         matches = []
@@ -84,7 +83,6 @@ class PatternMatch:
         results_bruteforce = self.search_brute_force(text, pattern)
 
         return {
-            'match-type': "brute force",
             'pattern': pattern,
             'matches': results_bruteforce,
             'matches_count': len(results_bruteforce)
@@ -94,7 +92,6 @@ class PatternMatch:
         results_kmp = self.search_kmp(text, pattern)
 
         return {
-            'match-type': 'kmp',
             'pattern': pattern,
             'matches': results_kmp,
             'matches_count': len(results_kmp)
@@ -129,6 +126,7 @@ class PatternMatch:
                 total_matches += doc_result_kmp['matches_count']  
            
         return {
+            'match-type': "kmp",
             'pattern': pattern,
             'total_matches': total_matches,
             'documents_found': len(results),
@@ -142,11 +140,12 @@ class PatternMatch:
         
         for doc_name in docs_to_search:
             if doc_name in document_texts:
-                doc_result_brtfrc = self.get_results_bruteforce(document_texts[doc_name], pattern)
-                results[doc_name] = doc_result_brtfrc # inserting into dict
-                total_matches += doc_result_brtfrc['matches_count']  
+                doc_result_bruteforce = self.get_results_bruteforce(document_texts[doc_name], pattern)
+                results[doc_name] = doc_result_bruteforce # inserting into dict
+                total_matches += doc_result_bruteforce['matches_count'] 
            
         return {
+            'match-type': "brute force",
             'pattern': pattern,
             'total_matches': total_matches,
             'documents_found': len(results),
