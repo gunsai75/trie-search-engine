@@ -5,11 +5,11 @@ def show_matches_with_context(results, doc_map, max_matches_per_doc=3, context_c
     Show search results with readable text context
     """
     pattern = results['pattern']
-    print(f"\n🔍 Found '{pattern}' in {results['documents_found']} documents ({results['total_matches']} total matches)")
+    print(f"\n Found '{pattern}' in {results['documents_found']} documents ({results['total_matches']} total matches)")
     print("=" * 70)
     
     for doc_name, doc_info in results['document_results'].items():
-        print(f"\n📄 {doc_name}: {doc_info['matches_count']} matches")
+        print(f"\n {doc_name}: {doc_info['matches_count']} matches")
         print("-" * 50)
         
         doc_text = doc_map[doc_name]

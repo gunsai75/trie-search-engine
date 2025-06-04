@@ -14,7 +14,7 @@ def display_search_results(results, doc_map, context_length=30):
     print("-" * 50)
     
     for doc_name, doc_results in results['document_results'].items():
-        print(f"\n📄 {doc_name} ({doc_results['matches_count']} matches):")
+        print(f"\n {doc_name} ({doc_results['matches_count']} matches):")
         print("=" * 40)
         
         doc_text = doc_map[doc_name]
@@ -132,6 +132,6 @@ def enhanced_display_results(bruteforce_results, kmp_results, doc_map):
     
     # Verify both algorithms give same results
     if (bruteforce_results['total_matches'] == kmp_results['total_matches']):
-        print(f"\n✅ Both algorithms found {bruteforce_results['total_matches']} matches")
+        print(f"\n Both algorithms found {bruteforce_results['total_matches']} matches")
     else:
-        print(f"\n❌ Mismatch: BF={bruteforce_results['total_matches']}, KMP={kmp_results['total_matches']}")
+        print(f"\n Mismatch: BF={bruteforce_results['total_matches']}, KMP={kmp_results['total_matches']}")
