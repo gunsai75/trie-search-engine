@@ -7,108 +7,115 @@ from typing import Dict, List
 import os
 import time
 
-def preprocess_docs(dir_path: str) -> Dict[str, str]:
+def preprocess_docs(dir_path: str) -> Dict[str, List[str]]:
+    """Preprocess all .txt files in a directory into a dictionary of tokenized words.
+    
+    Args:
+        dir_path (str): Path to the directory containing text files.
+    
+    Returns:
+        Dict[str, List[str]]: Dictionary mapping document names to lists of tokenized words.
+    """
     doc_tokens = preprocessing.get_tokens(dir_path)
     return doc_tokens
 
-def query_process(query: str) -> List:
+def query_process(query: str) -> List[str]:
+    """Clean and split a query string into individual words.
+    
+    Args:
+        query (str): The user-provided query string.
+    
+    Returns:
+        List[str]: List of cleaned query words (punctuation removed, split by spaces).
+    """
     q_clean = preprocessing.remove_punctuation(query)
     q_split = q_clean.split(" ")
     return q_split
 
-print("Welcome to Document Search")
-print("Only .txt files tho")
+def main():
+    """Main function to run the document search system."""
+    print("Welcome to Document Search")
+    print("Only .txt files are supported")
 
-target_path = input("Enter the path for your target directory: ")
-target_path = repr(target_path)[1:-1] # Converting to raw string
-
-if not os.path.exists(target_path):
-    print(f"Error: Directory '{target_path}' does not exist!")
-    exit(1)
-
-print(f"Looking in directory: {target_path}")
-if os.path.isdir(target_path):
-    files = [f for f in os.listdir(target_path) if f.endswith('.txt')]
-    print(f"Found .txt files: {files}")
-else:
-    print("Path is not a directory!")
-
-usr_query = input('Enter the phrase to search: ')
-
-trie = trie.PrefixTree()
-
-doc_collection = preprocess_docs(target_path) # creates a dictionary {doc_name: [list of words]}
-
-for doc in doc_collection: # traversing a dictionary
-    word_list = doc_collection[doc]
-    trie.insert_from_document(word_list, doc)
-
- # list of words in query
-query_split = query_process(usr_query)
-
-doc_map = preprocessing.map_documents(target_path) # maps doc name to it's text
-
-# trying to get prefixes found in trie and then putting then in matching algos 
-state = 1
-bruteforce = []
-kmp = []
-
-for q in query_split: # each query gets it's own thing
-    trie_results = trie.starts_with(q) 
-    if len(trie_results) == 0:
-        state = 0
-        print("No phrases found")
-        break
+    # Get and validate directory path
+    target_path = input("Enter the path for your target directory: ")
+    target_path = repr(target_path)[1:-1]  # Convert to raw string (TODO: Improve input handling)
+    
+    if not os.path.exists(target_path):
+        print(f"Error: Directory '{target_path}' does not exist!")
+        exit(1)
+    
+    print(f"Looking in directory: {target_path}")
+    if os.path.isdir(target_path):
+        files = [f for f in os.listdir(target_path) if f.endswith('.txt')]
+        print(f"Found .txt files: {files}")
     else:
-        state = 1
-        match = pattern_matching_test.PatternMatch()
-        # bruteforce
+        print("Error: Path is not a directory!")
+        exit(1)
+    
+    usr_query = input('Enter the phrase to search: ')
+    
+    # Initialize trie for prefix-based search
+    trie_instance = trie.PrefixTree()
+    
+    # Preprocess documents into tokens
+    doc_collection = preprocess_docs(target_path)  # {doc_name: [list of words]}
+    
+    # Insert words into trie with associated document names
+    for doc in doc_collection:
+        word_list = doc_collection[doc]
+        trie_instance.insert_from_document(word_list, doc)
+    
+    # Process query into individual words
+    query_split = query_process(usr_query)
+    
+    # Map document names to their full text
+    doc_map = preprocessing.map_documents(target_path)  # {doc_name: text}
+    
+    # Lists to store execution times for performance comparison
+    bruteforce_times = []
+    kmp_times = []
+    
+    # Search for each query word in relevant documents
+    for q in query_split:
+        trie_results = trie_instance.starts_with(q)  # Get words with prefix q and their documents
+        if not trie_results:
+            print(f"No matches found for prefix '{q}'")
+            break
+        
+        # Get unique documents containing prefix matches
         relevant_docs = set()
         for result in trie_results:
             relevant_docs.update(result['documents'])
         relevant_docs = list(relevant_docs)
         
-        # bruteforce
+        # Initialize pattern matcher
+        matcher = pattern_matching_test.PatternMatch()
+        
+        # Brute force search
         bruteforce_time_start = time.monotonic()
-        bruteforce_results = match.search_in_documents_bruteforce(doc_map, q, relevant_docs)
+        bruteforce_results = matcher.search_in_documents_bruteforce(doc_map, q, relevant_docs)
         bruteforce_time_end = time.monotonic()
-        bruteforce_time = bruteforce_time_end - bruteforce_time_start
-        bruteforce.append(bruteforce_time)
-
-        # kmp
+        bruteforce_times.append(bruteforce_time_end - bruteforce_time_start)
+        
+        # KMP search
         kmp_time_start = time.monotonic()
-        kmp_results = match.search_in_documents_kmp(doc_map, q, relevant_docs)
+        kmp_results = matcher.search_in_documents_kmp(doc_map, q, relevant_docs)
         kmp_time_end = time.monotonic()
-        kmp_time = kmp_time_end - kmp_time_start
-        kmp.append(kmp_time)
+        kmp_times.append(kmp_time_end - kmp_time_start)
+        
+        # Display results (simple format)
+        print("BRUTEFORCE")
+        print(bruteforce_results)
+        print("KMP")
+        print(kmp_results)
+    
+    # Display average execution times
+    if bruteforce_times:
+        print("=" * 30)
+        print("Total time taken:")
+        print(f"Bruteforce: {sum(bruteforce_times) / len(bruteforce_times):.6f} seconds")
+        print(f"KMP: {sum(kmp_times) / len(kmp_times):.6f} seconds")
 
-        # VERBOSE DISPLAY----
-        # formatter_verbose.enhanced_display_results(bruteforce_results, kmp_results, doc_map)
-
-        # SIMPLE DISPLAY ----- (uncomment the above line and comment the whole section below to implement VERBOSE)
-        print("\n" + "="*70)
-        print("BRUTE FORCE SEARCH RESULTS")
-        print("="*70)
-        formatter_simple.show_matches_with_context(bruteforce_results, doc_map)
-
-        print("\n" + "="*70)
-        print("KMP SEARCH RESULTS")
-        print("="*70)
-        formatter_simple.show_matches_with_context(kmp_results, doc_map)
-
-        # Verify both algorithms give identical results
-        if bruteforce_results['total_matches'] == kmp_results['total_matches']:
-            print(f"\n✅ VERIFICATION: Both algorithms found {bruteforce_results['total_matches']} matches")
-            print("✅ Results are identical - algorithms working correctly!")
-            # print(f"Bruteforce Time: {bruteforce_time}")
-            # print(f"KMP Time: {kmp_time}")
-
-        else:
-            print(f"\n❌ MISMATCH DETECTED:")
-            print(f"   Brute Force: {bruteforce_results['total_matches']} matches")
-            print(f"   KMP: {kmp_results['total_matches']} matches")
-
-print("="*30)
-print(f"Total time taken: ")
-print(f"Bruteforce: {sum(bruteforce)/len(bruteforce)}")
-print(f"KMP: {sum(kmp)/len(kmp)}")
+if __name__ == "__main__":
+    main()
