@@ -2,7 +2,7 @@ import preprocessing
 import trie
 import formatter_verbose
 import formatter_simple
-import pattern_matching_test
+import pattern_matching
 from collections import defaultdict
 from typing import Dict, List, Tuple
 import os
@@ -125,7 +125,7 @@ def main():
         relevant_docs = list(relevant_docs)
         
         # Initialize pattern matcher
-        matcher = pattern_matching_test.PatternMatch()
+        matcher = pattern_matching.PatternMatch()
         
         # Brute force search
         bruteforce_time_start = time.monotonic()
