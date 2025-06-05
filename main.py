@@ -29,7 +29,7 @@ def query_process(query: str) -> List[str]:
     Returns:
         List[str]: List of cleaned query words (punctuation removed, split by spaces).
     """
-    q_clean = preprocessing.remove_punctuation(query)
+    q_clean = preprocessing.remove_punctuation(query).lower()
     q_split = q_clean.split(" ")
     return q_split
 
@@ -86,6 +86,10 @@ def main():
     else:
         print("Error: Path is not a directory!")
         exit(1)
+
+    """ 
+    Add Insertion and Deletion part here
+    """
     
     usr_query = input('Enter the phrase to search: ')
     
@@ -94,7 +98,8 @@ def main():
     
     # Preprocess documents into tokens
     doc_collection = preprocess_docs(target_path)  # {doc_name: [list of words]}
-    
+    # print(doc_collection) 
+
     # Insert words into trie with associated document names
     for doc in doc_collection:
         word_list = doc_collection[doc]
@@ -131,6 +136,7 @@ def main():
         bruteforce_time_start = time.monotonic()
         bruteforce_results = matcher.search_in_documents_bruteforce(doc_map, q, relevant_docs)
         bruteforce_time_end = time.monotonic()
+
         bruteforce_times.append(bruteforce_time_end - bruteforce_time_start)
         all_results.append(bruteforce_results)
 
@@ -138,15 +144,17 @@ def main():
         kmp_time_start = time.monotonic()
         kmp_results = matcher.search_in_documents_kmp(doc_map, q, relevant_docs)
         kmp_time_end = time.monotonic()
+
         kmp_times.append(kmp_time_end - kmp_time_start)
         all_results.append(kmp_results)
 
         # Display results (simple format)
         print("BRUTEFORCE")
-        print(bruteforce_results)
+        # print(bruteforce_results)
         print("KMP")
-        print(kmp_results)
+        # print(kmp_results)
 
+        # Ranking by Relevance
         if all_results:
             print("\n" + "=" * 50)
             print("Ranked Documents by Relevance (Total Matches)")

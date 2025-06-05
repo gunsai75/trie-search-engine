@@ -45,7 +45,7 @@ def map_documents(target_dir: str) -> Dict[str, str]:
     for i in filtered:
         file_path = os.path.join(target_dir, i)  # Create full path
         with open(file_path, 'r', encoding='utf-8') as f:  # Use full path
-            file_text = f.read()
+            file_text = f.read().lower()
             cleaned_text = remove_punctuation(file_text)
             documents_table[i] = cleaned_text  # Correct dictionary assignment
     
