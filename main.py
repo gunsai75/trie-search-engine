@@ -1,12 +1,12 @@
 import preprocessing
 import trie
-import formatter_verbose
-import formatter_simple
 import pattern_matching
 from collections import defaultdict
 from typing import Dict, List, Tuple
 import os
 import time
+# import formatter_verbose
+# import formatter_simple
 
 def preprocess_docs(dir_path: str) -> Dict[str, List[str]]:
     """Preprocess all .txt files in a directory into a dictionary of tokenized words.
@@ -73,7 +73,7 @@ def main():
 
     # Get and validate directory path
     target_path = input("Enter the path for your target directory: ")
-    target_path = repr(target_path)[1:-1]  # Convert to raw string (TODO: Improve input handling)
+    target_path = os.path.abspath(target_path) # Convert to raw string (TODO: Improve input handling)
     
     if not os.path.exists(target_path):
         print(f"Error: Directory '{target_path}' does not exist!")
@@ -88,7 +88,9 @@ def main():
         exit(1)
 
     """ 
-    Add Insertion and Deletion part here
+    Bhuvan needs to add Insertion and Deletion part here
+    From the preprocessing module, insert_file and delete_file can be used
+    The preprocessing module is already imported.
     """
     
     usr_query = input('Enter the phrase to search: ')
