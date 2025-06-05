@@ -177,8 +177,11 @@ def main():
     
     # Display average execution times
     if bruteforce_times:
-        print("=" * 30)
-        print("Total time taken:")
+        print("=" * 70)
+        print("Total Time: ")
+        print(f"Bruteforce: {sum(bruteforce_times)}")
+        print(f"KMP: {sum(kmp_times)} \n")
+        print("Average of all times:")
         print(f"Bruteforce: {sum(bruteforce_times) / len(bruteforce_times):.6f} seconds")
         print(f"KMP: {sum(kmp_times) / len(kmp_times):.6f} seconds")
 
