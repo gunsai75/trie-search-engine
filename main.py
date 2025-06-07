@@ -73,6 +73,9 @@ def main():
 
     # Get and validate directory path
     target_path = input("Enter the path for your target directory: ")
+    if target_path == '':
+        print("Empty input detected. Defaulting to the current working directory.")
+        
     target_path = os.path.abspath(target_path) # Convert to raw string (TODO: Improve input handling)
     
     if not os.path.exists(target_path):
@@ -92,7 +95,43 @@ def main():
     From the preprocessing module, insert_file and delete_file can be used
     The preprocessing module is already imported.
     """
-    
+    print("\n\n\nWhat do you want to do in this directory? ")
+    print("1. Continue with search [DEFAULT]")
+    print("2. Insert a file in this directory")
+    print("3. Delete a file in this directory")
+
+    usr_choice = int(input("Enter a number: "))
+    if ((not type(usr_choice) is not int) and (usr_choice not in [1,2,3])):
+        raise TypeError("Only integers are allowed")
+
+    while(usr_choice != 1):
+        if usr_choice == 3:
+            try:
+                del_file_name = input("Enter file name to delete")
+                preprocessing.delete_file(target_path, del_file_name)
+                print("Deleted.")
+            except:
+                print("----- ERROR: Enter valid file name -----")
+            finally:
+                print("\nDefaulting to searching.")
+                usr_choice = 1
+
+        elif usr_choice == 2:
+            try:
+                path_file_insert = input("Enter file path to insert")
+                path_file_insert = os.path.abspath(path_file_insert)
+                preprocessing.insert_file(path_file_insert, target_path)
+                print("\n\nFile Inserted.")
+            except:
+                print("----- ERROR: Enter valid file name -----")
+            finally:
+                print("\nDefaulting to searching.")
+                usr_choice = 1
+
+        else:
+            break
+        
+
     usr_query = input('Enter the phrase to search: ')
     
     # Initialize trie for prefix-based search
