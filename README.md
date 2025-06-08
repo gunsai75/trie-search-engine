@@ -1,14 +1,15 @@
 # Document Search System
 
-A Python-based document search engine that uses advanced data structures and algorithms for efficient text pattern matching and retrieval.
+A Python-based document search engine that efficiently searches through text files using advanced string matching algorithms and data structures.
 
 ## Features
 
-- **Multi-Algorithm Pattern Matching**: Compare performance between Brute Force and KMP (Knuth-Morris-Pratt) algorithms
-- **Prefix Tree (Trie) Implementation**: Fast prefix-based word searching with inverted indexing
-- **Document Ranking**: Rank search results by relevance based on match frequency
-- **Performance Metrics**: Real-time execution time comparison between algorithms
-- **File Management**: Insert and delete documents from the search corpus
+- **Multiple Search Algorithms**: Implements both Brute Force and KMP (Knuth-Morris-Pratt) pattern matching algorithms
+- **Prefix-Based Search**: Uses a Trie data structure for efficient prefix matching
+- **Document Management**: Insert and delete files from the search directory
+- **Relevance Ranking**: Ranks documents by total number of matches across all query terms
+- **Performance Comparison**: Measures and compares execution times between different algorithms
+- **Text Preprocessing**: Handles punctuation removal and tokenization
 
 ## Project Structure
 
@@ -16,9 +17,9 @@ A Python-based document search engine that uses advanced data structures and alg
 document-search/
 ├── main.py              # Main application entry point
 ├── pattern_matching.py  # Pattern matching algorithms (Brute Force & KMP)
-├── preprocessing.py     # Text preprocessing and file handling utilities
-├── trie.py             # Prefix tree implementation with inverted indexing
-└── README.md           # Project documentation
+├── preprocessing.py     # Text preprocessing and file operations
+├── trie.py             # Trie data structure implementation
+└── README.md           # This file
 ```
 
 ## Requirements
@@ -30,168 +31,169 @@ document-search/
 
 1. Clone or download the project files
 2. Ensure all Python files are in the same directory
-3. Create a directory with `.txt` files you want to search
+3. Run the main application:
+
+```bash
+python main.py
+```
 
 ## Usage
 
-### Basic Usage
+### Basic Search
 
-1. Run the main application:
+1. **Start the application**:
    ```bash
    python main.py
    ```
 
-2. When prompted, enter the path to your directory containing `.txt` files:
-   ```
-   Enter the path for your target directory: /path/to/your/documents
-   ```
+2. **Enter directory path**: 
+   - Provide the path to your directory containing `.txt` files
+   - Leave empty to use current working directory
 
-3. Enter your search query:
-   ```
-   Enter the phrase to search: your search term
-   ```
+3. **Choose an action**:
+   - `1`: Continue with search (default)
+   - `2`: Insert a file into the directory
+   - `3`: Delete a file from the directory
 
-4. The system will display:
-   - Search results from both algorithms
-   - Ranked documents by relevance
-   - Performance comparison between algorithms
+4. **Enter search query**: 
+   - Type the phrase or words you want to search for
+   - The system will search for each word as a prefix
 
-### Example Output
+### File Management
 
-```
-Welcome to Document Search
-Only .txt files are supported
-Enter the path for your target directory: ./sample_docs
-Looking in directory: /absolute/path/to/sample_docs
-Found .txt files: ['document1.txt', 'document2.txt', 'document3.txt']
-Enter the phrase to search: python programming
+#### Insert a File
+- Select option `2` when prompted
+- Enter the full path of the file you want to insert
+- The file will be moved to the target directory
 
-BRUTEFORCE
-KMP
-
-==================================================
-Ranked Documents by Relevance (Total Matches)
-==================================================
-
-Document: document1.txt
-Total Matches: 15
-Details:
-  Pattern 'python': 8 matches at positions [12, 45, 78, 123, 156, 189, 234, 267]
-  Pattern 'programming': 7 matches at positions [23, 67, 134, 178, 245, 289, 323]
-
-======================================================================
-Total Time: 
-Bruteforce: 0.002341
-KMP: 0.001876 
-
-Average of all times:
-Bruteforce: 0.001171 seconds
-KMP: 0.000938 seconds
-```
+#### Delete a File
+- Select option `3` when prompted
+- Enter the filename you want to delete
+- The file will be removed from the target directory
 
 ## Algorithm Details
 
 ### Pattern Matching Algorithms
 
-#### Brute Force Search
-- **Time Complexity**: O(n×m) where n = text length, m = pattern length
+#### 1. Brute Force Search
+- **Time Complexity**: O(n×m) where n is text length, m is pattern length
 - **Space Complexity**: O(1)
 - Simple character-by-character comparison
 
-#### KMP (Knuth-Morris-Pratt) Algorithm
-- **Time Complexity**: O(n+m) where n = text length, m = pattern length
-- **Space Complexity**: O(m) for the LPS (Longest Proper Prefix Suffix) array
-- Optimized pattern matching using failure function
+#### 2. KMP (Knuth-Morris-Pratt) Algorithm
+- **Time Complexity**: O(n+m)
+- **Space Complexity**: O(m)
+- Uses a failure function to avoid redundant comparisons
+- More efficient for longer patterns and texts
 
 ### Data Structures
 
-#### Prefix Tree (Trie)
-- Efficient prefix-based searching
-- Integrated inverted index for document mapping
-- **Time Complexity**: O(m) for search where m = word length
-- **Space Complexity**: O(ALPHABET_SIZE × N × M) where N = number of words, M = average word length
+#### Trie (Prefix Tree)
+- Enables efficient prefix-based searching
+- **Time Complexity**: O(m) for search operations
+- Stores an inverted index mapping words to documents
 
-## API Reference
+#### Inverted Index
+- Maps each word to the set of documents containing it
+- Enables quick lookup of relevant documents for each query term
 
-### Main Functions
+## Output Format
 
-#### `preprocess_docs(dir_path: str) -> Dict[str, List[str]]`
-Preprocesses all `.txt` files in a directory into tokenized words.
+The system provides detailed output including:
 
-#### `query_process(query: str) -> List[str]`
-Cleans and splits a query string into individual words.
+1. **Search Results**: Shows matches found by both algorithms
+2. **Document Ranking**: Lists documents ranked by total number of matches
+3. **Match Details**: For each document, shows:
+   - Pattern searched
+   - Number of matches
+   - Positions of matches in the text
+4. **Performance Metrics**:
+   - Total execution time for each algorithm
+   - Average execution time across all searches
 
-#### `rank_documents(results_list: List[Dict]) -> List[Tuple[str, int, Dict]]`
-Ranks documents by total number of matches across all query words.
+### Sample Output
 
-### PatternMatch Class
+```
+Document: example.txt
+Total Matches: 5
+Details:
+  Pattern 'search': 3 matches at positions [10, 45, 78]
+  Pattern 'algorithm': 2 matches at positions [23, 56]
 
-#### `search_brute_force(text: str, pattern: str) -> List[int]`
-Performs brute force pattern matching.
+======================================================================
+Total Time: 
+Bruteforce: 0.002341
+KMP: 0.001567 
 
-#### `search_kmp(text: str, pattern: str) -> List[int]`
-Performs KMP pattern matching.
+Average of all times:
+Bruteforce: 0.001171 seconds
+KMP: 0.000784 seconds
+```
 
-#### `search_in_documents_kmp(document_texts: Dict, pattern: str, relevant_docs: List[str]) -> Dict`
-Searches for pattern in multiple documents using KMP.
+## File Format Requirements
 
-#### `search_in_documents_bruteforce(document_texts: Dict, pattern: str, relevant_docs: List[str]) -> Dict`
-Searches for pattern in multiple documents using brute force.
+- Only `.txt` files are supported
+- Files should be encoded in UTF-8
+- The system handles punctuation removal and text normalization automatically
 
-### PrefixTree Class
+## Technical Implementation
 
-#### `insert(word: str, document_name: str)`
-Inserts a word into the trie with associated document name.
+### Text Preprocessing
+- Removes punctuation and special characters
+- Converts text to lowercase for case-insensitive matching
+- Tokenizes text by whitespace
 
-#### `starts_with(prefix: str) -> List[Dict]`
-Returns all words that start with the given prefix along with their document locations.
-
-### Preprocessing Functions
-
-#### `remove_punctuation(text: str) -> str`
-Removes punctuation and special characters from text.
-
-#### `get_tokens(dir_path: str) -> Dict[str, List[str]]`
-Tokenizes all `.txt` files in a directory.
-
-#### `map_documents(target_dir: str) -> Dict[str, str]`
-Creates a mapping of document names to their cleaned text content.
-
-## Performance Considerations
-
-- **KMP Algorithm**: Generally faster for longer patterns and texts
-- **Brute Force**: May be faster for very short patterns or small texts
-- **Memory Usage**: Trie structure requires significant memory for large vocabularies
-- **Preprocessing**: One-time cost that improves search performance
-
-## File Format Support
-
-- Currently supports only `.txt` files
-- Files should be UTF-8 encoded
-- Binary files are ignored
-
-## Future Enhancements
-
-The codebase includes placeholder comments for:
-- File insertion and deletion capabilities (partially implemented)
-- Verbose and simple output formatters
-- Extended file format support
+### Search Process
+1. **Preprocessing**: Tokenize all documents and build trie structure
+2. **Query Processing**: Clean and split user query into individual terms
+3. **Prefix Matching**: Use trie to find words starting with each query term
+4. **Document Filtering**: Identify documents containing relevant words
+5. **Pattern Matching**: Apply both brute force and KMP algorithms
+6. **Ranking**: Sort documents by total number of matches
+7. **Results Display**: Show ranked results with detailed match information
 
 ## Error Handling
 
+The system includes error handling for:
 - Invalid directory paths
-- Non-existent files
-- Empty search queries
+- Missing files
+- Invalid file operations
+- Empty search results
 - Malformed input data
+
+## Performance Considerations
+
+- **Memory Usage**: Stores entire document collection in memory for fast access
+- **Scalability**: Suitable for small to medium-sized document collections
+- **Algorithm Choice**: KMP is generally faster, especially for longer patterns
+- **Preprocessing Overhead**: One-time cost for building trie and inverted index
+
+## Limitations
+
+- Only supports plain text files (.txt)
+- Entire document collection must fit in memory
+- Case-insensitive search only
+- No support for regular expressions or complex queries
+
+## Future Enhancements
+
+Potential improvements could include:
+- Support for additional file formats (PDF, DOCX, etc.)
+- Boolean query operators (AND, OR, NOT)
+- Fuzzy matching for approximate searches
+- Web interface for easier usage
+- Database storage for larger document collections
+- Advanced ranking algorithms (TF-IDF, BM25)
 
 ## Contributing
 
-When contributing to this project:
-1. Follow existing code style and structure
-2. Add appropriate error handling
-3. Include performance considerations
-4. Test with various file sizes and query types
+To contribute to this project:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add appropriate tests
+5. Submit a pull request
 
 ## License
 
-This project is provided as-is for educational and research purposes.
+This project is open source and available under the MIT License.
