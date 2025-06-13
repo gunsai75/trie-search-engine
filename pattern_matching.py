@@ -1,7 +1,22 @@
 from typing import List, Dict
 
 class PatternMatch:
+    """A class for pattern matching algorithms including brute force and KMP.
+
+    Provides methods for searching patterns in text and documents using brute force
+    and Knuth-Morris-Pratt (KMP) algorithms.
+    """
+    
     def search_brute_force(self, text: str, pattern: str) -> List[int]:
+        """Search for a pattern in text using brute force algorithm.
+
+        Args:
+            text (str): The text to search in.
+            pattern (str): The pattern to search for.
+
+        Returns:
+            List[int]: List of starting indices where the pattern is found.
+        """
         matches = []
         n, m = len(text), len(pattern)
         
@@ -27,6 +42,14 @@ class PatternMatch:
     # end of brute force search
     # start of KMP
     def compute_lps_arr(self, pattern: str) -> List[int]:
+        """Compute the Longest Prefix Suffix (LPS) array for KMP algorithm.
+
+        Args:
+            pattern (str): The pattern to compute LPS for.
+
+        Returns:
+            List[int]: The LPS array.
+        """
         m = len(pattern)
         lps = [0] * m
         length = 0
@@ -46,6 +69,15 @@ class PatternMatch:
         return lps
    
     def search_kmp(self, text: str, pattern: str) -> List[int]:
+        """Search for a pattern in text using KMP algorithm.
+
+        Args:
+            text (str): The text to search in.
+            pattern (str): The pattern to search for.
+
+        Returns:
+            List[int]: List of starting indices where the pattern is found.
+        """
         matches = []
         n, m = len(text), len(pattern)
         
@@ -80,6 +112,15 @@ class PatternMatch:
         return matches
 
     def get_results_bruteforce(self, text: str, pattern: str) -> Dict:
+        """Get brute force search results for a pattern in text.
+
+        Args:
+            text (str): The text to search in.
+            pattern (str): The pattern to search for.
+
+        Returns:
+            Dict: Dictionary containing pattern, matches, and match count.
+        """
         results_bruteforce = self.search_brute_force(text, pattern)
 
         return {
@@ -89,6 +130,15 @@ class PatternMatch:
         }
     
     def get_results_kmp(self, text: str, pattern: str) -> Dict:
+        """Get KMP search results for a pattern in text.
+
+        Args:
+            text (str): The text to search in.
+            pattern (str): The pattern to search for.
+
+        Returns:
+            Dict: Dictionary containing pattern, matches, and match count.
+        """
         results_kmp = self.search_kmp(text, pattern)
 
         return {
@@ -97,24 +147,17 @@ class PatternMatch:
             'matches_count': len(results_kmp)
         }
     
-    # def search_in_documents(self, pattern: str, relevant_docs: List[str] = None) -> Dict:
-    #     results = {}
-    #     total_matches = 0
-    #     docs_to_search = relevant_docs
-    #     docs_map = test1.map_documents()
-    #     for doc_name in docs_to_search:
-    #         if doc_name in document_texts:
-    #             doc_result = self.search_kmp(get_text_doc, pattern) 
-	# 			result = doc_result
-	# 			total_matches += doc_result['matches_count']
-    #     return {
-    #         'pattern': pattern,
-    #         'total_matches': total_matches,
-    #         'documents_found': len(results),
-    #         'document_results': result
-    #     }
-
     def search_in_documents_kmp(self, document_texts: Dict[str, str], pattern: str, relevant_docs: List[str] = None) -> Dict:
+        """Search for a pattern in multiple documents using KMP algorithm.
+
+        Args:
+            document_texts (Dict[str, str]): Dictionary mapping document names to their content.
+            pattern (str): The pattern to search for.
+            relevant_docs (List[str], optional): List of document names to search. Defaults to all documents.
+
+        Returns:
+            Dict: Dictionary containing search results including pattern, total matches, and document results.
+        """
         results = {}
         total_matches = 0
         docs_to_search = relevant_docs if relevant_docs is not None else list(document_texts.keys())
@@ -133,7 +176,17 @@ class PatternMatch:
             'document_results': results
         }
     
-    def search_in_documents_bruteforce(self, document_texts: Dict[str, str], pattern: str, relevant_docs:List[str] = None) -> Dict:
+    def search_in_documents_bruteforce(self, document_texts: Dict[str, str], pattern: str, relevant_docs: List[str] = None) -> Dict:
+        """Search for a pattern in multiple documents using brute force algorithm.
+
+        Args:
+            document_texts (Dict[str, str]): Dictionary mapping document names to their content.
+            pattern (str): The pattern to search for.
+            relevant_docs (List[str], optional): List of document names to search. Defaults to all documents.
+
+        Returns:
+            Dict: Dictionary containing search results including pattern, total matches, and document results.
+        """
         results = {}
         total_matches = 0
         docs_to_search = relevant_docs if relevant_docs is not None else list(document_texts.keys())
